@@ -42,6 +42,12 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
         init();
     }
 
+    public BarcodeScannerView(Context context, String hint) {
+        super(context);
+        mHint = hint;
+        init();
+    }
+
     public BarcodeScannerView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
 
@@ -74,10 +80,6 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
 
     private void init() {
         mViewFinderView = createViewFinderView(getContext());
-    }
-
-    public void setCameraHint(String hint) {
-        mHint = hint;
     }
 
     public final void setupLayout(CameraWrapper cameraWrapper) {
