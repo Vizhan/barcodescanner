@@ -10,6 +10,7 @@ public interface IViewFinder {
     void setBorderStrokeWidth(int borderStrokeWidth);
     void setBorderLineLength(int borderLineLength);
     void setLaserEnabled(boolean isLaserEnabled);
+    void setHint(String hint);
 
     void setBorderCornerRounded(boolean isBorderCornersRounded);
     void setBorderAlpha(float alpha);

@@ -35,9 +35,11 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     private float mBorderAlpha = 1.0f;
     private int mViewFinderOffset = 0;
     private float mAspectTolerance = 0.1f;
+    private String mHint = "";
 
-    public BarcodeScannerView(Context context) {
+    public BarcodeScannerView(Context context, String hint) {
         super(context);
+        mHint = hint;
         init();
     }
 
@@ -63,6 +65,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
             mSquaredFinder = a.getBoolean(R.styleable.BarcodeScannerView_squaredFinder, mSquaredFinder);
             mBorderAlpha = a.getFloat(R.styleable.BarcodeScannerView_borderAlpha, mBorderAlpha);
             mViewFinderOffset = a.getDimensionPixelSize(R.styleable.BarcodeScannerView_finderOffset, mViewFinderOffset);
+            mHint = a.getString(R.styleable.BarcodeScannerView_android_hint);
         } finally {
             a.recycle();
         }
@@ -107,6 +110,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
      */
     protected IViewFinder createViewFinderView(Context context) {
         ViewFinderView viewFinderView = new ViewFinderView(context);
+        viewFinderView.setHint(mHint);
         viewFinderView.setBorderColor(mBorderColor);
         viewFinderView.setLaserColor(mLaserColor);
         viewFinderView.setLaserEnabled(mIsLaserEnabled);

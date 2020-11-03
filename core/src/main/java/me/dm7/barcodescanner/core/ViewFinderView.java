@@ -49,7 +49,7 @@ public class ViewFinderView extends View implements IViewFinder {
     private boolean mIsLaserEnabled;
     private float mBordersAlpha;
     StaticLayout myStaticLayout;
-    String text = "Search for the barcode on your book and place it in front of you camera in the selected area.";
+    String text = "";
 
     private int mViewFinderOffset = 0;
 
@@ -60,6 +60,12 @@ public class ViewFinderView extends View implements IViewFinder {
 
     public ViewFinderView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
+        init();
+    }
+
+    public ViewFinderView(Context context, String hint) {
+        super(context);
+        this.text = hint;
         init();
     }
 
@@ -90,6 +96,11 @@ public class ViewFinderView extends View implements IViewFinder {
         mBorderPaint.setAntiAlias(true);
 
         mBorderLineLength = mDefaultBorderLineLength;
+    }
+
+    @Override
+    public void setHint(String hint) {
+        text = hint;
     }
 
     @Override
@@ -274,7 +285,7 @@ public class ViewFinderView extends View implements IViewFinder {
                 height = (int) (getHeight() * LANDSCAPE_HEIGHT_RATIO);
                 width = (int) (LANDSCAPE_WIDTH_HEIGHT_RATIO * height);
             } else {
-                width = (int) (getWidth() * PORTRAIT_WIDTH_RATIO - (MIN_DIMENSION_DIFF * getResources().getDisplayMetrics().density));
+                width = (int) (getWidth() * PORTRAIT_WIDTH_RATIO - (MIN_DIMENSION_DIFF * getResources().getDisplayMetrics().density * 2));
                 height = (int) (PORTRAIT_WIDTH_HEIGHT_RATIO * width);
             }
         }
