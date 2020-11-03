@@ -16,12 +16,12 @@ public class ViewFinderView extends View implements IViewFinder {
 
     private Rect mFramingRect;
 
-    private static final float PORTRAIT_WIDTH_RATIO = 6f/8;
-    private static final float PORTRAIT_WIDTH_HEIGHT_RATIO = 0.75f;
+    private static final float PORTRAIT_WIDTH_RATIO = 6f / 8;
+    private static final float PORTRAIT_WIDTH_HEIGHT_RATIO = 0.6f;
 
-    private static final float LANDSCAPE_HEIGHT_RATIO = 5f/8;
+    private static final float LANDSCAPE_HEIGHT_RATIO = 5f / 8;
     private static final float LANDSCAPE_WIDTH_HEIGHT_RATIO = 1.4f;
-    private static final int MIN_DIMENSION_DIFF = 50;
+    private static final int MIN_DIMENSION_DIFF = 20;
 
     private static final float DEFAULT_SQUARE_DIMENSION_RATIO = 5f / 8;
 
@@ -39,10 +39,15 @@ public class ViewFinderView extends View implements IViewFinder {
     protected Paint mLaserPaint;
     protected Paint mFinderMaskPaint;
     protected Paint mBorderPaint;
+    protected Paint mTextPaint;
+    protected float textWidth;
+    protected float[] widths;
     protected int mBorderLineLength;
     protected boolean mSquareViewFinder;
     private boolean mIsLaserEnabled;
     private float mBordersAlpha;
+    String text = "Search for the barcode on your book and place it in front of you camera in the selected area.";
+
     private int mViewFinderOffset = 0;
 
     public ViewFinderView(Context context) {
@@ -56,6 +61,15 @@ public class ViewFinderView extends View implements IViewFinder {
     }
 
     private void init() {
+        //text paint
+        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTextPaint.setTextSize(13f);
+        mTextPaint.setARGB(255,255,255,255);
+        mTextPaint.setStyle(Paint.Style.STROKE);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+        textWidth = mTextPaint.measureText(text);
+        widths = new float[text.length()];
+        mTextPaint.getTextWidths(text, widths);
         //set up laser paint
         mLaserPaint = new Paint();
         mLaserPaint.setColor(mDefaultLaserColor);
@@ -101,7 +115,9 @@ public class ViewFinderView extends View implements IViewFinder {
     }
 
     @Override
-    public void setLaserEnabled(boolean isLaserEnabled) { mIsLaserEnabled = isLaserEnabled; }
+    public void setLaserEnabled(boolean isLaserEnabled) {
+        mIsLaserEnabled = isLaserEnabled;
+    }
 
     @Override
     public void setBorderCornerRounded(boolean isBorderCornersRounded) {
@@ -146,7 +162,7 @@ public class ViewFinderView extends View implements IViewFinder {
 
     @Override
     public void onDraw(Canvas canvas) {
-        if(getFramingRect() == null) {
+        if (getFramingRect() == null) {
             return;
         }
 
@@ -156,13 +172,16 @@ public class ViewFinderView extends View implements IViewFinder {
         if (mIsLaserEnabled) {
             drawLaser(canvas);
         }
+
+        canvas.translate(getWidth() / 2f, getFramingRect().bottom + mBorderLineLength / 2);
+        canvas.drawText(text, 0, 0, mTextPaint);
     }
 
     public void drawViewFinderMask(Canvas canvas) {
         int width = canvas.getWidth();
         int height = canvas.getHeight();
         Rect framingRect = getFramingRect();
-        
+
         canvas.drawRect(0, 0, width, framingRect.top, mFinderMaskPaint);
         canvas.drawRect(0, framingRect.top, framingRect.left, framingRect.bottom + 1, mFinderMaskPaint);
         canvas.drawRect(framingRect.right + 1, framingRect.top, width, framingRect.bottom + 1, mFinderMaskPaint);
@@ -200,7 +219,7 @@ public class ViewFinderView extends View implements IViewFinder {
 
     public void drawLaser(Canvas canvas) {
         Rect framingRect = getFramingRect();
-        
+
         // Draw a red "laser scanner" line through the middle to show decoding is active
         mLaserPaint.setAlpha(SCANNER_ALPHA[scannerAlpha]);
         scannerAlpha = (scannerAlpha + 1) % SCANNER_ALPHA.length;
@@ -225,8 +244,8 @@ public class ViewFinderView extends View implements IViewFinder {
         int height;
         int orientation = DisplayUtils.getScreenOrientation(getContext());
 
-        if(mSquareViewFinder) {
-            if(orientation != Configuration.ORIENTATION_PORTRAIT) {
+        if (mSquareViewFinder) {
+            if (orientation != Configuration.ORIENTATION_PORTRAIT) {
                 height = (int) (getHeight() * DEFAULT_SQUARE_DIMENSION_RATIO);
                 width = height;
             } else {
@@ -234,7 +253,7 @@ public class ViewFinderView extends View implements IViewFinder {
                 height = width;
             }
         } else {
-            if(orientation != Configuration.ORIENTATION_PORTRAIT) {
+            if (orientation != Configuration.ORIENTATION_PORTRAIT) {
                 height = (int) (getHeight() * LANDSCAPE_HEIGHT_RATIO);
                 width = (int) (LANDSCAPE_WIDTH_HEIGHT_RATIO * height);
             } else {
@@ -243,11 +262,11 @@ public class ViewFinderView extends View implements IViewFinder {
             }
         }
 
-        if(width > getWidth()) {
+        if (width > getWidth()) {
             width = getWidth() - MIN_DIMENSION_DIFF;
         }
 
-        if(height > getHeight()) {
+        if (height > getHeight()) {
             height = getHeight() - MIN_DIMENSION_DIFF;
         }
 
