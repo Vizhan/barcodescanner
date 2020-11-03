@@ -37,9 +37,8 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     private float mAspectTolerance = 0.1f;
     private String mHint = "";
 
-    public BarcodeScannerView(Context context, String hint) {
+    public BarcodeScannerView(Context context) {
         super(context);
-        mHint = hint;
         init();
     }
 
@@ -75,6 +74,10 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
 
     private void init() {
         mViewFinderView = createViewFinderView(getContext());
+    }
+
+    public void setCameraHint(String hint) {
+        mHint = hint;
     }
 
     public final void setupLayout(CameraWrapper cameraWrapper) {
