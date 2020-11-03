@@ -18,7 +18,7 @@ public class ViewFinderView extends View implements IViewFinder {
 
     private Rect mFramingRect;
 
-    private static final float PORTRAIT_WIDTH_RATIO = 0.6f;
+    private static final float PORTRAIT_WIDTH_RATIO = 1f;
     private static final float PORTRAIT_WIDTH_HEIGHT_RATIO = 0.6f;
 
     private static final float LANDSCAPE_HEIGHT_RATIO = 5f / 8;
@@ -68,7 +68,7 @@ public class ViewFinderView extends View implements IViewFinder {
         mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextSize(13 * getResources().getDisplayMetrics().density);
         mTextPaint.setColor(0xFFFFFFFF);
-        mTextPaint.setStyle(Paint.Style.STROKE);
+        mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         textWidth = mTextPaint.measureText(text);
         widths = new float[text.length()];
@@ -172,7 +172,7 @@ public class ViewFinderView extends View implements IViewFinder {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        StaticLayout.Builder builder = StaticLayout.Builder.obtain(text, 0, text.length(), mTextPaint, getWidth());
+        StaticLayout.Builder builder = StaticLayout.Builder.obtain(text, 0, text.length(), mTextPaint, getWidth() - (int) (MIN_DIMENSION_DIFF * getResources().getDisplayMetrics().density * 2));
         myStaticLayout = builder.build();
     }
 
@@ -274,7 +274,7 @@ public class ViewFinderView extends View implements IViewFinder {
                 height = (int) (getHeight() * LANDSCAPE_HEIGHT_RATIO);
                 width = (int) (LANDSCAPE_WIDTH_HEIGHT_RATIO * height);
             } else {
-                width = (int) (getWidth() * PORTRAIT_WIDTH_RATIO);
+                width = (int) (getWidth() * PORTRAIT_WIDTH_RATIO - (MIN_DIMENSION_DIFF * getResources().getDisplayMetrics().density));
                 height = (int) (PORTRAIT_WIDTH_HEIGHT_RATIO * width);
             }
         }
