@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -16,14 +18,14 @@ public class ViewFinderView extends View implements IViewFinder {
 
     private Rect mFramingRect;
 
-    private static final float PORTRAIT_WIDTH_RATIO = 6f / 8;
+    private static final float PORTRAIT_WIDTH_RATIO = 0.6f;
     private static final float PORTRAIT_WIDTH_HEIGHT_RATIO = 0.6f;
 
     private static final float LANDSCAPE_HEIGHT_RATIO = 5f / 8;
     private static final float LANDSCAPE_WIDTH_HEIGHT_RATIO = 1.4f;
     private static final int MIN_DIMENSION_DIFF = 20;
 
-    private static final float DEFAULT_SQUARE_DIMENSION_RATIO = 5f / 8;
+    private static final float DEFAULT_SQUARE_DIMENSION_RATIO = 0.6f;
 
     private static final int[] SCANNER_ALPHA = {0, 64, 128, 192, 255, 192, 128, 64};
     private int scannerAlpha;
@@ -39,13 +41,14 @@ public class ViewFinderView extends View implements IViewFinder {
     protected Paint mLaserPaint;
     protected Paint mFinderMaskPaint;
     protected Paint mBorderPaint;
-    protected Paint mTextPaint;
+    protected TextPaint mTextPaint;
     protected float textWidth;
     protected float[] widths;
     protected int mBorderLineLength;
     protected boolean mSquareViewFinder;
     private boolean mIsLaserEnabled;
     private float mBordersAlpha;
+    StaticLayout myStaticLayout;
     String text = "Search for the barcode on your book and place it in front of you camera in the selected area.";
 
     private int mViewFinderOffset = 0;
@@ -62,9 +65,9 @@ public class ViewFinderView extends View implements IViewFinder {
 
     private void init() {
         //text paint
-        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextSize(13f);
-        mTextPaint.setARGB(255,255,255,255);
+        mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        mTextPaint.setTextSize(13 * getResources().getDisplayMetrics().density);
+        mTextPaint.setColor(0xFFFFFFFF);
         mTextPaint.setStyle(Paint.Style.STROKE);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         textWidth = mTextPaint.measureText(text);
@@ -161,6 +164,19 @@ public class ViewFinderView extends View implements IViewFinder {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        StaticLayout.Builder builder = StaticLayout.Builder.obtain(text, 0, text.length(), mTextPaint, getWidth());
+        myStaticLayout = builder.build();
+    }
+
+    @Override
     public void onDraw(Canvas canvas) {
         if (getFramingRect() == null) {
             return;
@@ -172,9 +188,10 @@ public class ViewFinderView extends View implements IViewFinder {
         if (mIsLaserEnabled) {
             drawLaser(canvas);
         }
-
+        canvas.save();
         canvas.translate(getWidth() / 2f, getFramingRect().bottom + mBorderLineLength / 2);
-        canvas.drawText(text, 0, 0, mTextPaint);
+        myStaticLayout.draw(canvas);
+        canvas.restore();
     }
 
     public void drawViewFinderMask(Canvas canvas) {
